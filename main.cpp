@@ -4,6 +4,6 @@
 using namespace std;
 
 int main(){
-  cout << "Hola mundo!" << endl;
-  cout << "Test";
+  string a = "tangananica-tanganana";
+  cout << a;
 }
