@@ -11,14 +11,10 @@ class PQnodo{
   public:
     string letra;
     int cuenta;
-    PQnodo* izq;
-    PQnodo* der;
-    PQnodo* padre;  
 
     PQnodo(string a, int b){
       letra = a;
       cuenta = b;
-      izq = der = NULL;
     }
 };
 
