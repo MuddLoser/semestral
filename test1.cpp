@@ -1,155 +1,133 @@
 //Aca toy haciendo la PQ
-//Da segmentation fault por ahora
+//Esta funciona pero lo codifica distinto a lo que pide el proyecto
+//hay que arreglar que lea strings en vez de un arreglo de letras
+//y cambiar el nombre de variables
 
-
-#include <bits/stdc++.h>
 #include <iostream>
-#include <string>
+#include <queue>
 using namespace std;
 
-class PQnodo{
-  public:
-    string letra;
-    int cuenta;
+#define MAX_SIZE 100
 
-    PQnodo(string a, int b){
-      letra = a;
-      cuenta = b;
-    }
+class HuffmanTreeNode {
+public:
+	char data;
+	int freq;
+	HuffmanTreeNode* left;
+	HuffmanTreeNode* right;
+	HuffmanTreeNode(char character, int frequency){
+		data = character;
+		freq = frequency;
+		left = right = NULL;
+	}
 };
 
-class PQheap{
-    public:
-		PQnodo H[50];
-		int tam = -1;
-
-    int parent(int i){ return (i - 1) / 2;}
-
-    int left(int i){ return ((2 * i) + 1); }
-
-    int right(int i){ return ((2 * i) + 2); }
-
-    void upheap(int i){
-        while (i > 0 && H[parent(i)].cuenta < H[i].cuenta) {
-            PQnodo aux = H[parent(i)];
-            H[parent(i)] = H[i];
-            H[i] = aux;
-
-            i = parent(i);
-        }
-    }
-
-    void downheap(int i){
-        int maxIndex = i;
-
-        int l = left(i);
-
-        if (l <= tam && H[l].cuenta > H[maxIndex].cuenta) { maxIndex = l; }
-
-        int r = right(i);
-
-        if (r <= tam && H[r].cuenta > H[maxIndex].cuenta) { maxIndex = r; }
-
-        if (i != maxIndex) {
-            swap(H[i], H[maxIndex]);
-            downheap(maxIndex);
-        }
-    }
-
-    void insert(int p){
-      string A = "T";
-      PQnodo *aux = new PQnodo(A,p);
-
-      tam = tam + 1;
-      H[tam] = *aux;
-
-      upheap(tam);
-    }
-
-    int extractMax(){
-        int result = H[0].cuenta;
-
-        H[0] = H[tam];
-        tam = tam - 1;
-
-        downheap(0);
-        return result;
-    }
-
-    
-    int getMax(){ return H[0].cuenta; }
-
-    void remove(int i){
-        H[i].cuenta = getMax() + 1;
-
-        upheap(i);
-
-        extractMax();
-    }
-
+class Compare {
+public:
+	bool operator()(HuffmanTreeNode* a, HuffmanTreeNode* b){
+		return a->freq > b->freq;
+	}
 };
 
-int main(){
+HuffmanTreeNode* generateTree(priority_queue<HuffmanTreeNode*, vector<HuffmanTreeNode*>, Compare> pq){
 
-  /*         45
-          /      \
-          31      14
-        /  \    /  \
-        13  20  7   11
-      /  \
-      12   7
-  Create a priority queue shown in 
-  example in a binary max heap form.
-  Queue will be represented in the
-  form of array as:
-  45 31 14 13 20 7 11 12 7 */
+	while (pq.size() != 1) {
+		HuffmanTreeNode* left = pq.top();
 
-  // Insert the element to the
-  // priority queue
-  cout << "Hola" << endl;
-  PQheap *pq;
-  cout << "Hola" << endl;
-  pq->insert(45);
-  pq->insert(20);
-  pq->insert(14);
-  pq->insert(12);
-  pq->insert(31);
-  pq->insert(7);
-  pq->insert(11);
-  pq->insert(13);
-  pq->insert(7);
+		pq.pop();
 
-  int i = 0;
+		HuffmanTreeNode* right = pq.top();
 
-  // Priority queue before extracting max
-  cout << "Priority Queue : ";
-  while (i <= pq->tam) {
-    cout << pq->H[i].cuenta << " ";
-    i++;
-  }
+		pq.pop();
 
-  cout << "\n";
+		// A new node is formed
+		// with frequency left->freq
+		// + right->freq
 
-  // Node with maximum priority
-  cout << "Node with maximum priority : " << pq->extractMax() << "\n";
+		// We take data as '$'
+		// because we are only
+		// concerned with the
+		// frequency
+		HuffmanTreeNode* node = new HuffmanTreeNode('$', left->freq + right->freq);
+		node->left = left;
+		node->right = right;
 
-  // Priority queue after extracting max
-  cout << "Priority queue after extracting maximum : ";
-  int j = 0;
-  while (j <= pq->tam) { 
-  cout << pq->H[j].cuenta << " ";
-  j++;
-  }
+		// Push back node
+		// created to the
+		// Priority Queue
+		pq.push(node);
+	}
 
-  cout << "\n";
+	return pq.top();
+}
 
-  // Remove element at index 3
-  pq->remove(3);
-  cout << "Priority queue after removing the element : ";
-  int l = 0;
-  while (l <= pq->tam) {
-      cout << pq->H[l].cuenta << " ";
-      l++;
-  }
-  return 0;
+// Function to print the
+// huffman code for each
+// character.
+
+// It uses arr to store the codes
+void printCodes(HuffmanTreeNode* root, int arr[], int top)
+{
+	// Assign 0 to the left node
+	// and recur
+	if (root->left) {
+		arr[top] = 0;
+		printCodes(root->left, arr, top + 1);
+	}
+
+	// Assign 1 to the right
+	// node and recur
+	if (root->right) {
+		arr[top] = 1;
+		printCodes(root->right, arr, top + 1);
+	}
+
+	// If this is a leaf node,
+	// then we print root->data
+
+	// We also print the code
+	// for this character from arr
+	if (!root->left && !root->right) {
+		cout << root->data << " ";
+		for (int i = 0; i < top; i++) {
+			cout << arr[i];
+		}
+		cout << endl;
+	}
+}
+
+void HuffmanCodes(char data[], int freq[], int size){
+
+	// Declaring priority queue
+	// using custom comparator
+	priority_queue<HuffmanTreeNode*,
+				vector<HuffmanTreeNode*>,
+				Compare>
+		pq;
+
+	// Populating the priority
+	// queue
+	for (int i = 0; i < size; i++) {
+		HuffmanTreeNode* newNode = new HuffmanTreeNode(data[i], freq[i]);
+		pq.push(newNode);
+	}
+
+	// Generate Huffman Encoding
+	// Tree and get the root node
+	HuffmanTreeNode* root = generateTree(pq);
+
+	// Print Huffman Codes
+	int arr[MAX_SIZE], top = 0;
+	printCodes(root, arr, top);
+}
+
+// Driver Code
+int main()
+{
+	char data[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
+	int freq[] = { 5, 9, 12, 13, 16, 45 };
+	int size = sizeof(data) / sizeof(data[0]);
+
+	HuffmanCodes(data, freq, size);
+	return 0;
 }
