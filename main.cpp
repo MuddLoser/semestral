@@ -3,7 +3,7 @@
 
 using namespace std;
 
-class PQnodo{
+struct PQnodo{
   public:
     char letra;
     int cuenta;
