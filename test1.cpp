@@ -1,7 +1,5 @@
 //Aca toy haciendo la PQ
-//Esta funciona pero lo codifica distinto a lo que pide el proyecto
-//hay que arreglar que lea strings en vez de un arreglo de letras
-//y cambiar el nombre de variables
+//Creo que funciona pero no estoy seguro
 
 //Falta la codificiacion con el trie
 
@@ -11,40 +9,40 @@ using namespace std;
 
 #define MAX_SIZE 100
 
-class HuffmanTreeNode {
+class NodoH {
 public:
-	char data;
-	int freq;
-	HuffmanTreeNode* left;
-	HuffmanTreeNode* right;
-	HuffmanTreeNode(char character, int frequency){
-		data = character;
-		freq = frequency;
-		left = right = NULL;
+	char letra;
+	int cuenta;
+	NodoH* izq;
+	NodoH* der;
+	NodoH(char a, int b){
+		letra = a;
+		cuenta = b;
+		izq = der = NULL;
 	}
 };
 
 class Compara {
 public:
-	bool operator()(HuffmanTreeNode* a, HuffmanTreeNode* b){
-		return a->freq > b->freq;
+	bool operator()(NodoH* a, NodoH* b){
+		return a->cuenta > b->cuenta;
 	}
 };
 
-HuffmanTreeNode* generateTree(priority_queue<HuffmanTreeNode*, vector<HuffmanTreeNode*>, Compara> pq){
+NodoH* arbol(priority_queue<NodoH*, vector<NodoH*>, Compara> pq){
 
 	while (pq.size() != 1) {
-		HuffmanTreeNode* left = pq.top();
+		NodoH* izq = pq.top();
 
 		pq.pop();
 
-		HuffmanTreeNode* right = pq.top();
+		NodoH* der = pq.top();
 
 		pq.pop();
 
-		HuffmanTreeNode* node = new HuffmanTreeNode('x', left->freq + right->freq);
-		node->left = left;
-		node->right = right;
+		NodoH* node = new NodoH('x', izq->cuenta + der->cuenta);
+		node->izq = izq;
+		node->der = der;
 
 		pq.push(node);
 	}
@@ -54,20 +52,20 @@ HuffmanTreeNode* generateTree(priority_queue<HuffmanTreeNode*, vector<HuffmanTre
 
 
 
-void printCodes(HuffmanTreeNode* root, int arr[], int top){
+void printCodes(NodoH* root, int arr[], int top){
 
-	if (root->left) {
+	if (root->izq) {
 		arr[top] = 0;
-		printCodes(root->left, arr, top + 1);
+		printCodes(root->izq, arr, top + 1);
 	}
 
-	if (root->right) {
+	if (root->der) {
 		arr[top] = 1;
-		printCodes(root->right, arr, top + 1);
+		printCodes(root->der, arr, top + 1);
 	}
 
-	if (!root->left && !root->right) {
-		cout << root->data << " ";
+	if (!root->izq && !root->der) {
+		cout << root->letra << " ";
 		for (int i = 0; i < top; i++) {
 			cout << arr[i];
 		}
@@ -75,48 +73,37 @@ void printCodes(HuffmanTreeNode* root, int arr[], int top){
 	}
 }
 
-void HuffmanCodes(char data[], int freq[], int size){
+int main(){
+  priority_queue<NodoH*, vector<NodoH*>, Compara> datos;
+	NodoH *nodo;
+	int aux;
+	char bux;
 
-	priority_queue<HuffmanTreeNode*, vector<HuffmanTreeNode*>, Compara> pq;
+	//string a = "aaaaabbbbbbbbbccccccccccccdddddddddddddeeeeeeeeeeeeeeeefffffffffffffffffffffffffffffffffffffffffffff";
+	string a = "tangananica-tanganana";
+  int frec[94] = {0}; 		//cada elemento corresponde a un simbolo ascii de 32 a 126
+                      			//ej: el elemento en a[65] cuenta 'a', que en ascii es 97
 
-	for (int i = 0; i < size; i++) {
-		HuffmanTreeNode* newNode = new HuffmanTreeNode(data[i], freq[i]);
-		pq.push(newNode);
+	for (int i = 0; i<a.size(); i++){
+		aux = a[i];
+		frec[aux-32] = frec[aux-32] + 1;
+	}	
+
+	for (int i = 0; i<a.size(); i++){
+		aux = a[i];
+		bux = a[i];
+		int b = aux-32;
+		if(frec[b]!=0){
+			nodo = new NodoH(bux,frec[b]);
+			frec[b] = 0;
+      cout << nodo->letra << ": " << nodo->cuenta << endl;
+			datos.push(nodo);
+		}
 	}
 
-	HuffmanTreeNode* root = generateTree(pq);
+	NodoH* root = arbol(datos);
 
 	int arr[MAX_SIZE], top = 0;
 	printCodes(root, arr, top);
-}
-
-int main(){
-	/*vector<HuffmanTreeNode> data1;
-	HuffmanTreeNode *aux;
-	string a = "tangananica-tanganana";
-	bool check[94]; //true si el char esta en el string
-					//false si no está
-	vector<char> aux1;
-	vector<int>  aux2;
-
-
-	for (int i = 0; i<a.size(); i++){
-		int B = a[i] - 32;
-		int x = 0;
-		if(!check[B]){			//no está
-			check[B] = true;
-			aux1.push_back(a[i]);
-			x = 1;
-		}else if(check[B]){		//está!
-			x = x + 1;
-		}if(i=a.si)
-	}
-*/
-
-	char data[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
-	int freq[] = { 5, 9, 12, 13, 16, 45 };
-	int size = sizeof(data) / sizeof(data[0]);
-
-	HuffmanCodes(data, freq, size);
 	return 0;
 }
