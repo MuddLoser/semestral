@@ -20,8 +20,10 @@ public:
 		izq = L;
 		der = R;
 	}
-};
+};	
 
+//idea de usar un comparador y la biblioteca estandar priority_queue sacadas de
+//https://www.geeksforgeeks.org/huffman-coding-using-priority-queue/
 class Compara {
 public:
 	bool operator()(nodo* a, nodo* b){
