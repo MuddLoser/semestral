@@ -5,105 +5,103 @@
 
 #include <iostream>
 #include <queue>
+#include <unordered_map>
 using namespace std;
 
-#define MAX_SIZE 100
-
-class NodoH {
+struct nodo {
 public:
 	char letra;
 	int cuenta;
-	NodoH* izq;
-	NodoH* der;
-	NodoH(char a, int b){
+	nodo* izq;
+	nodo* der;
+	nodo(char a, int b, nodo* L, nodo* R){
 		letra = a;
 		cuenta = b;
-		izq = der = NULL;
+		izq = L;
+		der = R;
 	}
 };
 
 class Compara {
 public:
-	bool operator()(NodoH* a, NodoH* b){
+	bool operator()(nodo* a, nodo* b){
 		return a->cuenta > b->cuenta;
 	}
 };
 
-NodoH* arbol(priority_queue<NodoH*, vector<NodoH*>, Compara> pq){
+void cod(nodo* a, string txt, unordered_map<char, string> &Huff) {
+    if (a == nullptr) return;
 
-	while (pq.size() != 1) {
-		NodoH* izq = pq.top();
+    if (!a->izq && !a->der)  Huff[a->letra] = txt;
 
-		pq.pop();
-
-		NodoH* der = pq.top();
-
-		pq.pop();
-
-		NodoH* node = new NodoH('x', izq->cuenta + der->cuenta);
-		node->izq = izq;
-		node->der = der;
-
-		pq.push(node);
-	}
-
-	return pq.top();
+    cod(a->izq, txt + "0", Huff);
+    cod(a->der, txt + "1", Huff);
 }
 
+string coding(nodo* &a, string txt) {
+    unordered_map<char, int> frec;
+    priority_queue<nodo*, vector<nodo*>, Compara> pq;
+	nodo* aux;
 
+	for(int i = 0; i<txt.size(); i++){
+		char ch = txt[i];
+        frec[ch]++;
+    }
 
-void printCodes(NodoH* root, int arr[], int top){
+    for (pair<char, int> par : frec) {
+		aux = new nodo(par.first, par.second, nullptr, nullptr);
+        pq.push(aux);
+    }
 
-	if (root->izq) {
-		arr[top] = 0;
-		printCodes(root->izq, arr, top + 1);
-	}
+    while (pq.size() != 1) {
+        nodo* izq = pq.top(); 
+		pq.pop();
+        nodo* der = pq.top(); 
+		pq.pop();
 
-	if (root->der) {
-		arr[top] = 1;
-		printCodes(root->der, arr, top + 1);
-	}
+        int suma = izq->cuenta + der->cuenta;
+		aux = new nodo('\0', suma, izq, der);
+        pq.push(aux);
+    }
 
-	if (!root->izq && !root->der) {
-		cout << root->letra << " ";
-		for (int i = 0; i < top; i++) {
-			cout << arr[i];
-		}
-		cout << endl;
-	}
+    a = pq.top();
+    unordered_map<char, string> Huff;
+    cod(a, "", Huff);
+
+    string coded = "";
+    for(int i = 0; i<txt.size(); i++){
+		char ch = txt[i];
+        coded = coded + Huff[ch];
+    }
+
+    return coded;
 }
+
+string decoding(nodo* a, string txt){
+	string out;
+	nodo *temp = a;
+
+	for(int i = 0; i<txt.size(); i++){
+		char ch = txt[i];
+        if (ch == '0') temp = temp->izq;
+        else 		   temp = temp->der;
+        if (!temp->izq && !temp->der) {
+            out = out + temp->letra;
+            temp = a;
+        }
+    }
+    return out;
+}
+
 
 int main(){
-  priority_queue<NodoH*, vector<NodoH*>, Compara> datos;
-	NodoH *nodo;
-	int aux;
-	char bux;
+	nodo* a;
+	string b = "tangananica-tanganana";
+	string huffcode = coding(a, b);
+	cout << huffcode << endl;
+	
+	string c = "11110101101010010110011100011101111101011010100100";
+	string huffdecode = decoding(a,huffcode);
+	cout << huffdecode << endl;
 
-	//string a = "aaaaabbbbbbbbbccccccccccccdddddddddddddeeeeeeeeeeeeeeeefffffffffffffffffffffffffffffffffffffffffffff";
-	string a = "tangananica-tanganana";
-  int frec[94] = {0}; 		//cada elemento corresponde a un simbolo ascii de 32 a 126
-                      			//ej: el elemento en a[65] cuenta 'a', que en ascii es 97
-
-	for (int i = 0; i<a.size(); i++){
-		aux = a[i];
-		frec[aux-32] = frec[aux-32] + 1;
-	}	
-
-	for (int i = 0; i<a.size(); i++){
-		aux = a[i];
-		bux = a[i];
-		int b = aux-32;
-		if(frec[b]!=0){
-			nodo = new NodoH(bux,frec[b]);
-			frec[b] = 0;
-      cout << nodo->letra << ": " << nodo->cuenta << endl;
-			datos.push(nodo);
-		}
-	}
-
-	NodoH* root = arbol(datos);
-
-	int arr[MAX_SIZE], top = 0;
-	printCodes(root, arr, top);
-	return 0;
 }
