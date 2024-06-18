@@ -38,7 +38,7 @@ void cod(nodo* a, string txt, unordered_map<char, string> &Huff) {
     cod(a->der, txt + "1", Huff);
 }
 
-string coding(nodo* &a, string txt) {
+string codificar(nodo* &a, string txt) {
     unordered_map<char, int> frec;
     priority_queue<nodo*, vector<nodo*>, Compara> pq;
 	nodo* aux;
@@ -77,7 +77,7 @@ string coding(nodo* &a, string txt) {
     return coded;
 }
 
-string decoding(nodo* a, string txt){
+string decodificar(nodo* a, string txt){
 	string out;
 	nodo *temp = a;
 
@@ -97,11 +97,11 @@ string decoding(nodo* a, string txt){
 int main(){
 	nodo* a;
 	string b = "tangananica-tanganana";
-	string huffcode = coding(a, b);
+	string huffcode = codificar(a, b);
 	cout << huffcode << endl;
 	
 	string c = "11110101101010010110011100011101111101011010100100";
-	string huffdecode = decoding(a,huffcode);
+	string huffdecode = decodificar(a,huffcode);
 	cout << huffdecode << endl;
 
 }
