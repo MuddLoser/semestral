@@ -1,30 +1,17 @@
 #include <iostream>
 #include <string>
+#include "huff.cpp"
 
 using namespace std;
 
-struct PQnodo{
-  public:
-    char letra;
-    int cuenta;
-    PQnodo* izq;
-    PQnodo* der;
-    PQnodo* padre;  
-    PQnodo(char a, int b){
-      letra = a;
-      cuenta = b;
-      izq = der = NULL;
-    }
-};
-
-class PQ{
-  public:
-  PQnodo arr[45];
-};
-
 int main(){
-  string a = "tangananica-tanganana";
-  for(int i = 0; i<a.length(); i++){
-    cout << a[i] << " ";
-  }
+	nodo* a;
+	string b = "tangananica-tanganana";
+	string huffcode = codificar(a, b);
+	cout << huffcode << endl;
+	
+	string c = "11110101101010010110011100011101111101011010100100";
+	string huffdecode = decodificar(a,huffcode);
+	cout << huffdecode << endl;
+
 }
