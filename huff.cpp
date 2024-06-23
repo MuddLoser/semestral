@@ -6,6 +6,8 @@
 #include <iostream>
 #include <queue>
 #include <unordered_map>
+#include <sstream>
+#include <fstream>
 using namespace std;
 
 struct nodo {
@@ -93,4 +95,28 @@ string decodificar(nodo* a, string txt){
         }
     }
     return out;
+}
+
+//funcion string a bits de
+//https://stackoverflow.com/questions/33457974/outputting-a-binary-string-to-a-binary-file-in-c
+void comp(string txt, ofstream& f){
+    const unsigned int bitspb = CHAR_BIT;
+    unsigned char byte;
+
+    if(txt.size() != 0){
+        for (size_t i = 0; i < txt.size(); ++i){
+            if ((i % bitspb) == 0){
+                // first bit of a byte
+                byte = 0;   
+            }
+            if (txt[i] == '1'){
+                // set a bit to 1
+                byte |= (1 << (i % bitspb));
+            }
+            if (((i % bitspb) == bitspb - 1) || i + 1 == txt.size()){
+                // last bit of the byte
+                f << byte;
+            }
+        }
+    }
 }
