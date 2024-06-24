@@ -1,3 +1,4 @@
+//g++ -g -o comprcod main.cpp Trie.cpp LempelZiv.cpp
 #include <iostream>
 #include <string>
 #include <fstream>
