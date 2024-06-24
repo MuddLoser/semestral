@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "huff.cpp"
+#include "LempelZiv.h"
 
 using namespace std;
 
